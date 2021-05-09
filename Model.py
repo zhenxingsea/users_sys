@@ -1,10 +1,9 @@
 from flask import Flask
 from marshmallow import Schema, fields, pre_load, validate
-from flask_marshmallow import Marshmallow
-from flask_sqlalchemy import SQLAlchemy
+from run import db
+from run import ma
 
-ma = Marshmallow()
-db = SQLAlchemy()
+DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S%z'
 
 
 class SysUsers(db.Model):
@@ -27,6 +26,17 @@ class SysUsers(db.Model):
         self.create_time = create_time
         self.update_time = update_time
         self.validity_time = validity_time
+
+
+class SysUserSchema(ma.Schema):
+    uid = fields.String()
+    name = fields.String()
+    device_id = fields.String()
+    secret_key = fields.String()
+    application_id = fields.String()
+    create_time = fields.DateTime(format=DATETIME_FORMAT)
+    update_time = fields.DateTime(format=DATETIME_FORMAT)
+    validity_time = fields.DateTime(format=DATETIME_FORMAT)
 
 
 class Users(db.Model):
@@ -54,6 +64,18 @@ class Users(db.Model):
         self.validity_time = validity_time
 
 
+class UserSchema(ma.Schema):
+    uid = fields.String()
+    name = fields.String()
+    source = fields.String()
+    device_id = fields.String()
+    secret_key = fields.String()
+    application_id = fields.String()
+    create_time = fields.DateTime(format=DATETIME_FORMAT)
+    update_time = fields.DateTime(format=DATETIME_FORMAT)
+    validity_time = fields.DateTime(format=DATETIME_FORMAT)
+
+
 class Applications(db.Model):
     __tablename__ = 'applications'
     id = db.Column(db.String(10), primary_key=True, unique=True)
@@ -74,6 +96,16 @@ class Applications(db.Model):
         self.validity_time = validity_time
 
 
+class ApplicationSchema(ma.Schema):
+    id = fields.String()
+    name = fields.String()
+    device_id = fields.String()
+    secret_key = fields.String()
+    create_time = fields.DateTime(format=DATETIME_FORMAT)
+    update_time = fields.DateTime(format=DATETIME_FORMAT)
+    validity_time = fields.DateTime(format=DATETIME_FORMAT)
+
+
 class Devices(db.Model):
     __tablename__ = 'devices'
     id = db.Column(db.String(64), primary_key=True, unique=True)
@@ -92,3 +124,13 @@ class Devices(db.Model):
         self.create_time = create_time
         self.update_time = update_time
         self.validity_time = validity_time
+
+
+class ApplicationSchema(ma.Schema):
+    id = fields.String()
+    system = fields.String()
+    platform = fields.String()
+    application = fields.String()
+    create_time = fields.DateTime(format=DATETIME_FORMAT)
+    update_time = fields.DateTime(format=DATETIME_FORMAT)
+    validity_time = fields.DateTime(format=DATETIME_FORMAT)

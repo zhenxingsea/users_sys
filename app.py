@@ -6,9 +6,6 @@ from resources.Devices import Devices
 from resources.Applications import Applications
 from resources.Login import Login
 
-# from resources.Category import CategoryResource
-# from resources.Comment import CommentResource
-
 api_bp = Blueprint('api', __name__)
 api = Api(api_bp)
 

@@ -6,7 +6,6 @@ marshmallow
 flask_sqlalchemy
 flask_marshmallow
 marshmallow-sqlalchemy
-psycopg2-binary
 python-daemon
 flask-jwt-extended
 pymysql
