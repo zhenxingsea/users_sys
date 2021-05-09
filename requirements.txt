@@ -8,4 +8,5 @@ flask_marshmallow
 marshmallow-sqlalchemy
 psycopg2-binary
 python-daemon
-weixin-python
+flask-jwt-extended
+pymysql
