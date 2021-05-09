@@ -1,15 +1,18 @@
-from flask import Flask
 from marshmallow import Schema, fields, pre_load, validate
-from run import db
-from run import ma
+from app import app
+from flask_marshmallow import Marshmallow
+from flask_sqlalchemy import SQLAlchemy
 
 DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S%z'
 
+db = SQLAlchemy(app)
+ma = Marshmallow(app)
 
 class SysUsers(db.Model):
     __tablename__ = 'sysusers'
     uid = db.Column(db.String(20), primary_key=True, unique=True)
     name = db.Column(db.String(30), unique=True)
+    password = db.Column(db.String(30), unique=True)
     device_id = db.Column(db.String(64), unique=True)
     secret_key = db.Column(db.String(255), unique=True)
     application_id = db.Column(db.String(10), unique=True)
@@ -17,9 +20,10 @@ class SysUsers(db.Model):
     update_time = db.Column(db.DateTime, unique=True)
     validity_time = db.Column(db.DateTime, unique=True)
 
-    def __init__(self, uid, name, device_id, secret_key, application_id, create_time, update_time, validity_time):
+    def __init__(self, uid, name, password, device_id, secret_key, application_id, create_time, update_time, validity_time):
         self.uid = uid
         self.name = name
+        self.password = password
         self.device_id = device_id
         self.secret_key = secret_key
         self.application_id = application_id
@@ -31,6 +35,7 @@ class SysUsers(db.Model):
 class SysUserSchema(ma.Schema):
     uid = fields.String()
     name = fields.String()
+    password = fields.String()
     device_id = fields.String()
     secret_key = fields.String()
     application_id = fields.String()
@@ -38,11 +43,17 @@ class SysUserSchema(ma.Schema):
     update_time = fields.DateTime(format=DATETIME_FORMAT)
     validity_time = fields.DateTime(format=DATETIME_FORMAT)
 
+    class Meta:
+        fields = ["uid", "name", "password", "device_id", "secret_key", "application_id", "create_time", "update_time",
+                  "validity_time"]
+        ordered = True
+
 
 class Users(db.Model):
     __tablename__ = 'users'
     uid = db.Column(db.String(20), primary_key=True, unique=True)
     name = db.Column(db.String(30), unique=True)
+    password = db.Column(db.String(30), unique=True)
     source = db.Column(db.String(128), unique=True)
     device_id = db.Column(db.String(64), unique=True)
     secret_key = db.Column(db.String(255), unique=True)
@@ -51,10 +62,11 @@ class Users(db.Model):
     update_time = db.Column(db.DateTime, unique=True)
     validity_time = db.Column(db.DateTime, unique=True)
 
-    def __init__(self, uid, name, source, device_id, secret_key, application_id, create_time, update_time,
+    def __init__(self, uid, name, password, source, device_id, secret_key, application_id, create_time, update_time,
                  validity_time):
         self.uid = uid
         self.name = name
+        self.password = password
         self.source = source
         self.device_id = device_id
         self.secret_key = secret_key

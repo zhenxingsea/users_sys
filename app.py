@@ -1,17 +1,11 @@
-from flask import Blueprint
-from flask_restful import Api
-from resources.SysUsers import SysUsers
-from resources.Users import Users
-from resources.Devices import Devices
-from resources.Applications import Applications
-from resources.Login import Login
+from flask import Flask
 
-api_bp = Blueprint('api', __name__)
-api = Api(api_bp)
+app = Flask(__name__)
+app.config.from_object("config")
 
-# Route
-api.add_resource(SysUsers, '/SysUsers')
-api.add_resource(Users, '/Users')
-api.add_resource(Devices, '/Devices')
-api.add_resource(Applications, '/Applications')
-api.add_resource(Login, '/Login')
+if __name__ == "__main__":
+    from Model import *
+    from Auth import *
+    from views import api_bp
+    app.register_blueprint(api_bp, url_prefix='/api')
+    app.run(host="0.0.0.0", port=8080, debug=True)

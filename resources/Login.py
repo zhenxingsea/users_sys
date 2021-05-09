@@ -4,15 +4,22 @@ from flask import request
 from flask import jsonify
 from Model import *
 
+
 class Login(Resource):
     def post(self):
         username = request.json.get("username", None)
         password = request.json.get("password", None)
-        if self.auth(username, password):
-            access_token = create_access_token(identity={"username": username, "uid": 1})
-            return jsonify(access_token=access_token)
+        sysuser = self.auth(username, password)
+        if sysuser:
+            access_token = create_access_token(identity={"username": sysuser["name"], "uid": sysuser["uid"]})
+            return jsonify(code=200, message="login succeed", access_token=access_token)
         else:
-            return {}
+            return jsonify(code=401, message="login fail")
 
     def auth(self, username, password):
-        return True
+        sysuser = SysUsers.query.filter_by(name=username, password=password).first()
+        if sysuser:
+            sysuser = SysUserSchema().dump(sysuser)
+            return sysuser
+        else:
+            return False
