@@ -47,10 +47,11 @@ class AuthUsers(Resource):
         secret_key = request.json.get("secret_key", None)
         system = request.json.get("system", None)
         platform = request.json.get("platform", None)
+        aut_application_id = request.json.get("aut_application_id", None)
         result = {}
         if auth_type == "password":
             if password and username:
-                result = self.auth_password(username, password, device_id, application_id, result)
+                result = self.auth_password(username, password, device_id, application_id, aut_application_id, result)
             else:
                 result["code"] = 200
                 result["message"] = "password or user non-compliance"
@@ -70,7 +71,7 @@ class AuthUsers(Resource):
             result = {"code": 500, "message": "auth type non-compliance"}
         return jsonify(result)
 
-    def auth_password(self, username, password, device_id, application_id, result):
+    def auth_password(self, username, password, device_id, application_id, aut_application_id, result):
         pw = hashlib.new("sha256")
         pw.update(password.encode("utf-8"))
         password = pw.hexdigest()
@@ -137,7 +138,7 @@ class AuthUsers(Resource):
             result["code"] = 300
             result["message"] = "application_id is null"
         try:
-            uid = str(uuid.uuid5(uuid.NAMESPACE_DNS, 'python.org'))
+            uid = str(uuid.uuid5(uuid.NAMESPACE_DNS, str(datetime.now())))
             application = ApplicationsModel(id=application_id, name=application_name, uid=uid,
                                             create_time=datetime.now(),
                                             update_time=datetime.now(),

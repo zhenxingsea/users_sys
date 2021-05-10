@@ -130,13 +130,14 @@ class AuthApplicationsModel(db.Model):
     id = db.Column(db.String(64), primary_key=True)
     name = db.Column(db.String(30), nullable=False)
     sysuid = db.Column(db.String(36), nullable=False)
+    server = db.Column(db.String(64), nullable=False)
     secret_key = db.Column(db.String(255), nullable=False)
     create_time = db.Column(db.DateTime, nullable=False)
     update_time = db.Column(db.DateTime, nullable=False)
     validity_time = db.Column(db.DateTime, nullable=False)
     is_auth = db.Column(db.Integer, default=0, nullable=False)
 
-    def __init__(self, id, name, sysuid, secret_key, create_time, update_time, validity_time, is_auth):
+    def __init__(self, id, name, sysuid, secret_key, create_time, update_time, validity_time, server, is_auth):
         self.id = id
         self.name = name
         self.sysuid = sysuid
@@ -145,6 +146,7 @@ class AuthApplicationsModel(db.Model):
         self.update_time = update_time
         self.validity_time = validity_time
         self.is_auth = is_auth
+        self.server = server
 
 
 class AuthApplicationSchema(ma.Schema):
@@ -156,10 +158,11 @@ class AuthApplicationSchema(ma.Schema):
     update_time = fields.DateTime(format=DATETIME_FORMAT)
     validity_time = fields.DateTime(format=DATETIME_FORMAT)
     is_auth = fields.Number()
+    server = fields.String()
 
     class Meta:
         fields = ["id", "name", "sysuid", "secret_key", "create_time", "update_time",
-                  "validity_time", "is_auth"]
+                  "validity_time", "is_auth", "server"]
         ordered = True
 
 
@@ -202,3 +205,21 @@ class DeviceSchema(ma.Schema):
         fields = ["id", "uid", "system", "platform", "create_time", "update_time", "application",
                   "validity_time", "is_auth"]
         ordered = True
+
+
+class AuthUsersAuthApplications(db.Model):
+    __tablename__ = 'auth_users_auth_applications'
+    auid = db.Column(db.String(36), primary_key=True)
+    aaid = db.Column(db.String(64), primary_key=True)
+    create_time = db.Column(db.DateTime, nullable=False)
+    update_time = db.Column(db.DateTime, nullable=False)
+    validity_time = db.Column(db.DateTime, nullable=False)
+    is_auth = db.Column(db.Integer, default=0, nullable=False)
+
+    def __init__(self, auid, aaid, create_time, update_time, validity_time, is_auth):
+        self.auid = auid
+        self.aaid = aaid
+        self.create_time = create_time
+        self.update_time = update_time
+        self.validity_time = validity_time
+        self.is_auth = is_auth
