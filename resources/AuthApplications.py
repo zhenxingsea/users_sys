@@ -36,7 +36,6 @@ class AuthApplications(Resource):
                 reslut["code"] = 200
                 reslut["message"] = "register authApplication succeed"
             except Exception as err:
-                err.with_traceback()
                 db.session.rollback()
                 reslut["code"] = 200
                 reslut["message"] = "register authApplication fail"

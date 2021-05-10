@@ -50,11 +50,11 @@ class AuthUsers(Resource):
         aut_application_id = request.json.get("aut_application_id", None)
         result = {}
         if auth_type == "password":
-            if password and username:
+            if password and username and aut_application_id:
                 result = self.auth_password(username, password, device_id, application_id, aut_application_id, result)
             else:
-                result["code"] = 200
-                result["message"] = "password or user non-compliance"
+                result["code"] = 400
+                result["message"] = "password or user or aut_application non-compliance"
         elif auth_type == "code":
             result = self.auth_code(code, device_id, application_id, result)
         elif auth_type == "message":
@@ -84,12 +84,25 @@ class AuthUsers(Resource):
                 device = DevicesModel.query.filter(
                     and_(DevicesModel.id == device_id, DevicesModel.uid == authuser.uid)).first()
                 if device and device.validity_time > datetime.now() and device.is_auth == 1:
-                    authuser.last_login = datetime.now()
-                    application.validity_time += timedelta(days=7)
-                    device.validity_time += timedelta(days=7)
-                    db.session.commit()
-                    result["code"] = 200
-                    result["message"] = "auth succeed"
+                    try:
+                        authuser.last_login = datetime.now()
+                        application.validity_time += timedelta(days=7)
+                        device.validity_time += timedelta(days=7)
+                        authUserAuthApplication = AuthUsersAuthApplications(auid=authuser.uid, aaid=aut_application_id,
+                                                                            create_time=datetime.now(),
+                                                                            update_time=datetime.now(),
+                                                                            validity_time=datetime.now() + timedelta(
+                                                                                days=360),
+                                                                            is_auth=1)
+                        db.session.add(authUserAuthApplication)
+                        db.session.commit()
+                        result["code"] = 200
+                        result["message"] = "auth succeed"
+                    except Exception as err:
+                        err.with_traceback()
+                        db.session.rollback()
+                        result["code"] = 500
+                        result["message"] = "auth fail"
                 else:
                     result["code"] = 402
                     result["message"] = "device non-compliance"

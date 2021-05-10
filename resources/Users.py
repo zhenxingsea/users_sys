@@ -20,7 +20,7 @@ class Users(Resource):
         secret_key = request.json.get("secret_key", None)
         application_id = request.json.get("application_id", None)
         if password1 is not None and password2 is not None and username is not None:
-            sysuser = SysUsers(uid="dfd", name=username, password=password1, device_id=device_id,
+            sysuser = SysUsersModel(uid="dfd", name=username, password=password1, device_id=device_id,
                                secret_key=secret_key, application_id=application_id,
                                create_time=datetime.now(), update_time=datetime.now(),
                                validity_time=datetime.now())
