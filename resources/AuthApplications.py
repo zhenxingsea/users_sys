@@ -9,8 +9,48 @@ from datetime import datetime, timedelta
 
 
 class AuthApplications(Resource):
+    @jwt_required()
     def get(self):
-        return ""
+        get_type = request.args.get("get_type", "all")
+        page = request.args.get("page", 0)
+        limit = request.args.get("limit", 10)
+        name = request.args.get("name", "")
+        result = {"code": 500, "message": "get fail"}
+        if get_type == "count":
+            count = AuthApplicationsModel.query.count()
+            result["count"] = count
+            result["code"] = 200
+            result["message"] = "get succeed"
+        if get_type == "all":
+            authApplications = AuthApplicationsModel.query.limit(int(limit)).offset(int(page) * int(limit)).order_by(
+                AuthApplicationsModel.create_time.desc()).all()
+            count = AuthApplicationsModel.query.count()
+            result["count"] = count
+            result["code"] = 200
+            result["message"] = "get succeed"
+            result["data"] = []
+            result["current_page"] = int(page)
+            for aa in authApplications:
+                aas = AuthApplicationSchema()
+                aaj = aas.dump(aa)
+                result["data"].append(aaj)
+        if get_type == "name":
+            authApplications = AuthApplicationsModel.query.filter(
+                AuthApplicationsModel.name.contains(name, autoescape=True)).order_by(
+                AuthApplicationsModel.create_time.desc()).limit(
+                int(limit)).offset(int(page) * int(limit)).all()
+            count = AuthApplicationsModel.query.filter(
+                AuthApplicationsModel.name.contains(name, autoescape=True)).count()
+            result["count"] = count
+            result["data"] = []
+            result["code"] = 200
+            result["message"] = "get succeed"
+            result["current_page"] = int(page)
+            for aa in authApplications:
+                aas = AuthApplicationSchema()
+                aaj = aas.dump(aa)
+                result["data"].append(aaj)
+        return jsonify(result)
 
     @jwt_required()
     def post(self):
