@@ -2,8 +2,8 @@
 DIALECT = 'mysql'
 DRIVER = 'pymysql'
 USERNAME = 'root'
-PASSWORD = 'xing'
-HOST = '172.16.0.15'
+PASSWORD = 'root2021'
+HOST = 'localhost'
 PORT = '3306'
 DATABASE = 'sys_users'
 

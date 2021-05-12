@@ -12,7 +12,6 @@ api = Api(api_bp)
 
 # Route
 api.add_resource(SysUsers, '/SysUsers')
-api.add_resource(Users, '/Users')
 api.add_resource(Devices, '/Devices')
 api.add_resource(AuthApplications, '/AuthApplications')
 api.add_resource(Login, '/Login')

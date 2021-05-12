@@ -13,15 +13,16 @@ ma = Marshmallow(app)
 class SysUsersModel(db.Model):
     __tablename__ = 'sys_users'
     uid = db.Column(db.String(36), primary_key=True)
-    name = db.Column(db.String(30), nullable=False)
+    name = db.Column(db.String(30), nullable=False, unique=True)
     password = db.Column(db.String(64), nullable=False)
-    secret_key = db.Column(db.String(255), nullable=False)
+    secret_key = db.Column(db.String(255))
     create_time = db.Column(db.DateTime, nullable=False)
     update_time = db.Column(db.DateTime, nullable=False)
     validity_time = db.Column(db.DateTime, nullable=False)
     last_login = db.Column(db.DateTime, nullable=False)
+    is_auth = db.Column(db.Integer, default=0, nullable=False)
 
-    def __init__(self, uid, name, password, secret_key, create_time, update_time, validity_time, last_login):
+    def __init__(self, uid, name, password, secret_key, create_time, update_time, validity_time, last_login, is_auth):
         self.uid = uid
         self.name = name
         self.password = password
@@ -30,6 +31,7 @@ class SysUsersModel(db.Model):
         self.update_time = update_time
         self.validity_time = validity_time
         self.last_login = last_login
+        self.is_auth = is_auth
 
 
 class SysUserSchema(ma.Schema):
@@ -41,17 +43,18 @@ class SysUserSchema(ma.Schema):
     update_time = fields.DateTime(format=DATETIME_FORMAT)
     validity_time = fields.DateTime(format=DATETIME_FORMAT)
     last_login = fields.DateTime(format=DATETIME_FORMAT)
+    is_auth = fields.Number()
 
     class Meta:
         fields = ["uid", "name", "password", "secret_key", "create_time", "update_time",
-                  "validity_time", "last_login"]
+                  "validity_time", "last_login", "is_auth"]
         ordered = True
 
 
 class AuthUsersModel(db.Model):
     __tablename__ = 'auth_users'
     uid = db.Column(db.String(36), primary_key=True)
-    name = db.Column(db.String(30), nullable=False)
+    name = db.Column(db.String(30), nullable=False, unique=True)
     password = db.Column(db.String(64), nullable=False)
     source = db.Column(db.String(128), nullable=False)
     secret_key = db.Column(db.String(255), nullable=False)
